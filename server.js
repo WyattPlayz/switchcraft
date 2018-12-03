@@ -85,6 +85,25 @@ app.get('/code', function(req, res) {
   res.sendFile(__dirname + '/views/MySQL.html');
 });
 
+app.get('/chat', function(req, res) {
+  res.write('<body>');
+  res.write('<link rel="stylesheet" href="/style.css">');
+  res.write("<script src='/chat.js' defer></script>");
+  res.write('<button onclick="clear()"> Clear Chat History </button>');
+  db.each('SELECT * FROM messages', function(err, row) {
+    if (err) throw err;
+    res.write("<div class='container'>")
+    res.write("<p><b>" + row.username + "</b> : <i>" + row.message + "</i>");
+    res.write("</div>");
+  });
+  res.write('<form action="/saymsg" method="GET">');
+  res.write('<textarea name="message" rows="4" col="8"></textarea>');
+  res.write('<input type="submit" value="Send!">')
+  res.write('</form>')
+  res.write('</body>');
+  res.status(200)
+});
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function() {
   console.log('Your app is listening on port ' + listener.address().port);
